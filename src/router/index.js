@@ -13,12 +13,14 @@ import Home from '@/views/layout/home'
 import Category from '@/views/layout/category'
 import Cart from '@/views/layout/cart'
 import User from '@/views/layout/user'
+import store from '@/store/modules/user'
+
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'home',
+    name: 'homeview',
     component: HomeView
   },
   {
@@ -30,11 +32,11 @@ const routes = [
     path: '/layout',
     name: 'layout',
     component: Layout,
-    redirect: '/home1',
+    redirect: '/home',
     children: [
       {
-        path: '/home1',
-        name: 'home1',
+        path: '/home',
+        name: 'home',
         component: Home
       },
       {
@@ -91,6 +93,23 @@ const routes = [
 
 const router = new VueRouter({
   routes
+})
+const authUrls = ['/pay', '/myorder']
+
+router.beforeEach((to, from, next) => {
+  console.log(to, from, next)
+  if (!authUrls.includes(to.path)) {
+    next()
+    return
+  }
+  // const token = store.state.user.userInfo.token
+  const token = store.getters.token
+  console.log(token)
+  if (token) {
+    next()
+  } else {
+    next('/login')
+  }
 })
 
 export default router
