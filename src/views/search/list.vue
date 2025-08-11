@@ -1,11 +1,11 @@
 <template>
   <div class="search">
-    <van-nav-bar fixed title="商品列表" left-arrow @click="$router.go(-1)"></van-nav-bar>
+    <van-nav-bar fixed title="商品列表" left-arrow @click-left="$router.go(-1)"></van-nav-bar>
     <van-search
     readonly
     shape="round"
     background="#ffffff"
-    value="querySearch || '搜索商品'"
+    :value="querySearch || '搜索商品'"
     show-action
     @click="$router.push('/search')">
     <template #action>
@@ -20,16 +20,23 @@
     </div>
 
     <div class="goods-list">
-      <GoodsItem v-for="item in 10" :key="item"></GoodsItem>
+      <GoodsItem v-for="item in proList" :key="item.goods_id" :item="item"></GoodsItem>
     </div>
   </div>
 </template>
 
 <script>
 import GoodsItem from '@/components/GoodsItem.vue'
+import { getProList } from '@/api/product'
 export default {
   name: 'ListIndex',
-  comments: {
+  data () {
+    return {
+      page: 1,
+      proList: []
+    }
+  },
+  components: {
     GoodsItem
   },
   computed: {
@@ -37,6 +44,15 @@ export default {
     querySearch () {
       return this.$route.query.search
     }
+  },
+  async created () {
+    const { data: { list } } = await getProList({
+      categoryId: this.$route.query.categoryId,
+      goodsName: this.querySearch,
+      page: this.page
+    })
+    console.log(list)
+    this.proList = list.data
   }
 }
 </script>

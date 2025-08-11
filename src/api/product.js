@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import Category from '@/views/layout/category.vue'
+// import Category from '@/views/layout/category.vue'
 
 export const getProList = (obj) => {
   const { CategoryId, goodsName, page } = obj
