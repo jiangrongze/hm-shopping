@@ -18,3 +18,11 @@ export const getProDetail = (goodsId) => {
     }
   })
 }
+export const getProComments = (goodsId, limit) => {
+  return request.get('/comment/listRows', {
+    params: {
+      goodsId,
+      limit
+    }
+  })
+}
