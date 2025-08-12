@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-// import Category from '@/views/layout/category.vue'
 
 export const getProList = (obj) => {
   const { CategoryId, goodsName, page } = obj
@@ -8,6 +7,14 @@ export const getProList = (obj) => {
       CategoryId,
       goodsName,
       page
+    }
+  })
+}
+export const getProDetail = (goodsId) => {
+  console.log('999999999999999999999999999999999999')
+  return request.get('/goods/detail', {
+    params: {
+      goodsId
     }
   })
 }
