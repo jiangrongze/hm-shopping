@@ -1,5 +1,83 @@
 <template>
-  <div >我是pay</div>
+  <div class="pay">
+    我是pay
+    <van-nav-bar fixed title="订单结算台" left-arrow @click="$router.go(-1)"></van-nav-bar>
+
+    <div class="address">
+      <van-icon name="logistics" />
+    </div>
+
+    <div class="info" v-if="selectedAddress.address_id">
+      <div class="info-content">
+        <span class="name">{{ selectedAddress.name }}</span>
+        <span class="mobile">{{ selectedAddress.phone }}</span>
+      </div>
+      <div class="info-address">
+        {{ longAddress }}
+      </div>
+    </div>
+    <div class="info" v-else>
+      请选择配送地址
+    </div>
+
+    <div class="right-icon">
+      <van-icon name="arrow" />
+    </div>
+
+    <div class="pay-list">
+      <div class="list">
+        <div class="goods-item">
+          <div class="left">
+            <img src="" alt="" />
+          </div>
+          <div class="right">
+            <p class="tit text-ellipsis-2">
+              三系手机
+            </p>
+            <p class="info">
+              <span class="count">x3</span>
+              <span class="price">$99.99</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="pay-detail">
+        <div class="pay-cell">
+          <span>订单总金额：</span>
+          <span class="red">$1200.00</span>
+        </div>
+        <div class="pay-cell">
+          <span>优惠券：</span>
+          <span>无优惠券可用</span>
+        </div>
+
+        <div class="pay-cell">
+          <span>配送费用</span>
+          <span v-if="false">请选择配送地址</span>
+          <span v-else class="red">+$0.00</span>
+        </div>
+      </div>
+
+      <div class="pay-way">
+        <span class="tit">支付方式</span>
+        <div class="pay-cell">
+          <span><van-icon name="balance-o" />余额支付（可用 ¥ 99999.000 元 ）  </span>
+          <span class="red"><van-icon name="passed" /> </span>
+        </div>
+      </div>
+
+      <div class="buytips">
+        <textarea placeholder="选填：买家留言（50字内）" name="" id="" cols="30" rows="10"></textarea>
+      </div>
+    </div>
+
+    <div class="footer-fixed">
+      <div class="left">支付款：<span>$99999</span></div>
+      <div class="tipsbtn">提交订单</div>
+    </div>
+
+  </div>
 </template>
 
 <script>
@@ -15,6 +93,10 @@ export default {
   computed: {
     selectedAddress () {
       return this.addressList[0] || {}
+    },
+    longAddressList () {
+      const region = this.selectedAddress.region
+      return region.province + region.city + region.region + this.selectedAddress.detail
     }
   },
   created () {
