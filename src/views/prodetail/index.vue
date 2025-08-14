@@ -56,12 +56,14 @@
     <div class="desc" v-html="detail.content">
 
     </div>
+
     <div class="footer">
-      <div class="icon-home">
+      <div @click="$router.push('/')" class="icon-home">
         <van-icon name="wap-home-o" />
         <span>首页</span>
       </div>
-      <div class="icon-cart">
+      <div @click="$router.push('/cart')" class="icon-cart">
+        <span v-if="cartTotal > 0" class="num">{{ cartTotal }}</span>
         <van-icon name="shopping-cart-o" />
         <span>购物车</span>
       </div>
@@ -70,7 +72,7 @@
     </div>
 
     <!-- 弹层显示 -->
-    <van-action-sheet v-model="showPannel" title="mode === 'cart' ? '加入购物车' : '立即购买'">
+    <van-action-sheet v-model="showPannel" :title="mode === 'cart' ? '加入购物车' : '立即购买'">
       <div class="product">
         <div class="product-title">
           <div class="left">
@@ -89,11 +91,11 @@
         </div>
         <div class="num-box">
           <span>数量</span>
-          数字占位
+          <CountBox v-model="addCount"></CountBox>
         </div>
 
         <div class="showbtn" v-if="detail.stock_total > 0">
-          <div class="btn" v-if="mode === 'cart'">加入购物车</div>
+          <div class="btn" v-if="mode === 'cart'" @click="addCart">加入购物车</div>
           <div class="btn now" v-else>立刻购买</div>
         </div>
         <div class="btn-none" v-else>该商品已抢完</div>
@@ -106,8 +108,14 @@
 <script>
 import { getProComments, getProDetail } from '@/api/product'
 import defaultImg from '@/assets/default-avatar.png'
+import CountBox from '@/components/CountBox.vue'
+import { addCart } from '@/api/cart'
+// import { Dialog } from 'vant'
 export default {
   name: 'ProdetailIndex',
+  components: {
+    CountBox
+  },
   data () {
     return {
       images: [
@@ -120,7 +128,9 @@ export default {
       commentList: [], // 评价内容
       defaultImg,
       showPannel: false,
-      mode: 'cart'
+      mode: 'cart',
+      addCount: 4,
+      cartTotal: 0
     }
   },
   computed: {
@@ -156,6 +166,40 @@ export default {
     buyFn () {
       this.mode = 'buyNow'
       this.showPannel = true
+    },
+    async addCart () {
+      console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++')
+      console.log(this.$store.getters.token)
+      // this.$router.push('/login')
+      if (!this.$store.getters.token) {
+        // console.log('==============================+')
+        // Dialog.alert('123454')
+        this.$dialog.confirm({
+          title: '温馨提示',
+          message: '此时需要先登录才能操作',
+          confirmButtonText: '去登录',
+          cancelButtonText: '再逛逛'
+        })
+          .then(() => {
+            // this.$router.push('/login')
+            // 如果希望，跳转到登录=>登录后能回跳回来，需要在跳转去携带参数（当前的路径
+            // this.$route.fullpath (会包含查询参数)
+            // this.$router.push({
+            this.$router.replace({
+              path: '/login',
+              query: {
+                backUrl: this.$route.fullPath
+              }
+            })
+          })
+          .catch(() => {
+          })
+      }
+      const { data } = await addCart(this.goodsId, this.addCount, this.detail.skuList[0].goods_sku_id)
+      this.cartTotal = data.cartTotal
+      this.$toast('加入购物车成功')
+      this.showPannel = false
+      console.log(this.cartTotal)
     }
   }
 }
@@ -180,9 +224,21 @@ export default {
     background: rgba(0, 0, 0, 0.1);
 
   }
-
-  bbbb {
-
+  .icon-home,
+  .icon-cart {
+  height: 36px;
+  line-height: 36px;
+  width: 120px;
+  border-radius: 18px;
+  background-color: #ffa900;
+  text-align: center;
+  color: #fff;
+  font-size: 14px;
+}
+  footer {
+    width: auto;
+    height: auto;
+    background-color: #333;
     .btn-add,
     .btn-buy {
       height: 36px;
@@ -223,6 +279,22 @@ export default {
 }
 .btn-none {
   background-color: #cccccc;
+}
+.footer .icon-cart {
+  position: relative;
+  padding: 0 6px;
+  .num {
+    z-index: 999;
+    position: absolute;
+    top: -2px;
+    right: 0;
+    min-width: 16px;
+    padding: 0 4px;
+    color: #fff;
+    text-align: center;
+    background-color: #ee0a24;
+    border-radius: 50%;
+  }
 }
 
 </style>
