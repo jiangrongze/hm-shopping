@@ -96,7 +96,7 @@
 
         <div class="showbtn" v-if="detail.stock_total > 0">
           <div class="btn" v-if="mode === 'cart'" @click="addCart">加入购物车</div>
-          <div class="btn now" v-else>立刻购买</div>
+          <div @click="goBuyNow" class="btn now" v-else>立刻购买</div>
         </div>
         <div class="btn-none" v-else>该商品已抢完</div>
       </div>
@@ -166,6 +166,16 @@ export default {
     buyFn () {
       this.mode = 'buyNow'
       this.showPannel = true
+      // this.$router.push('/pay')
+      // this.$router.replace({
+      //   path: '/login',
+      //   query: {
+      //     backUrl: this.$route.fullPath
+      //   }
+      // }).catch(err => {
+      // // 捕获"重定向导致的导航冲突"错误
+      //   console.log('导航冲突已处理:', err)
+      // })
     },
     async addCart () {
       console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++')
@@ -200,6 +210,18 @@ export default {
       this.$toast('加入购物车成功')
       this.showPannel = false
       console.log(this.cartTotal)
+    },
+    async goBuyNow () {
+      console.log('00000000----------------')
+      await this.$router.push({
+        path: '/pay',
+        query: {
+          mode: 'buyNow',
+          goodsId: this.goodsId,
+          goodsSkuId: this.detail.skuList[0].goods_sku_id,
+          goodsNum: this.addCount
+        }
+      })
     }
   }
 }

@@ -43,7 +43,7 @@
               <span>合计：</span>
               <span>$ <i class="totalPrice">{{ selPrice }}</i></span>
             </div>
-            <div v-if="!isEdit" class="goPay" :class="{ disabled: selCount === 0 }">结算({{ selCount }})</div>
+            <div @click="goPay" v-if="!isEdit" class="goPay" :class="{ disabled: selCount === 0 }">结算({{ selCount }})</div>
             <div v-else @click="handleDel" class="delete" :class="{ disabled: selCount === 0 }">删除</div>
           </div>
         </div>
@@ -53,7 +53,7 @@
         <div class="tips">
         购物车为空,快去逛逛吧
         </div>
-        <div class="btn" @click="$router.push('/home')">去逛逛</div>
+        <div class="btn" @click="$router.push('/pay')">去逛逛</div>
       </div>
   </div>
 </template>
@@ -107,6 +107,19 @@ export default {
       if (this.selCount === 0) return
       await this.$store.dispatch('cart/delSelect')
       this.isEdit = false
+    },
+    goPay () {
+      // console.log('000000000000000000000000000000000000000')
+      // 判断有没有选中
+      if (this.selCount > 0) {
+        this.$router.push({
+          path: '/pay',
+          query: {
+            mode: 'cart',
+            cartIds: this.selCartList.map(item => item.id).join(',') // 'cartId,cartId,...'
+          }
+        })
+      }
     }
   },
   watch: {

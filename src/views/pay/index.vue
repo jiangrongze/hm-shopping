@@ -1,7 +1,7 @@
 <template>
   <div class="pay">
     我是pay
-    <van-nav-bar fixed title="订单结算台" left-arrow @click="$router.go(-1)"></van-nav-bar>
+    <van-nav-bar fixed title="订单结算台" left-arrow @click-left="$router.go(-1)"></van-nav-bar>
 
     <div class="address">
       <van-icon name="logistics" />
@@ -13,7 +13,7 @@
         <span class="mobile">{{ selectedAddress.phone }}</span>
       </div>
       <div class="info-address">
-        {{ longAddress }}
+        {{ longAddressList }} -----------
       </div>
     </div>
     <div class="info" v-else>
@@ -24,28 +24,33 @@
       <van-icon name="arrow" />
     </div>
 
-    <div class="pay-list">
+    <div class="pay-list" v-if="order.goodsList">
       <div class="list">
-        <div class="goods-item">
+        <div class="goods-item" v-for="item in order.goodsList" :key="item.goods_id">
           <div class="left">
-            <img src="" alt="" />
+            <img :src="item.goods_image" alt="" />
           </div>
           <div class="right">
             <p class="tit text-ellipsis-2">
-              三系手机
+             {{ item.goods_name }}
             </p>
             <p class="info">
-              <span class="count">x3</span>
-              <span class="price">$99.99</span>
+              <span class="count">x{{ item.total_num }}</span>
+              <span class="price">${{ item.total_pay_price }}</span>
             </p>
           </div>
         </div>
       </div>
 
+      <div class="flow-num-box">
+        <span>共 {{ order.orderTotalNum }} 件商品，合计： </span>
+        <span class="money">$ {{ order.orderTotalPrice }}</span>
+      </div>
+
       <div class="pay-detail">
         <div class="pay-cell">
           <span>订单总金额：</span>
-          <span class="red">$1200.00</span>
+          <span class="red">$ {{ order.orderTotalPrice }}</span>
         </div>
         <div class="pay-cell">
           <span>优惠券：</span>
@@ -54,7 +59,7 @@
 
         <div class="pay-cell">
           <span>配送费用</span>
-          <span v-if="false">请选择配送地址</span>
+          <span v-if="!selectedAddress">请选择配送地址</span>
           <span v-else class="red">+$0.00</span>
         </div>
       </div>
@@ -62,7 +67,7 @@
       <div class="pay-way">
         <span class="tit">支付方式</span>
         <div class="pay-cell">
-          <span><van-icon name="balance-o" />余额支付（可用 ¥ 99999.000 元 ）  </span>
+          <span><van-icon name="balance-o" />余额支付（可用 ¥ {{ personal.balance }} 元 ）  </span>
           <span class="red"><van-icon name="passed" /> </span>
         </div>
       </div>
@@ -73,7 +78,7 @@
     </div>
 
     <div class="footer-fixed">
-      <div class="left">支付款：<span>$99999</span></div>
+      <div class="left">支付款：<span>$ {{ order.orderTotalPrice }}</span></div>
       <div class="tipsbtn">提交订单</div>
     </div>
 
@@ -82,12 +87,14 @@
 
 <script>
 import { getAddressList } from '@/api/address'
-
+import { checkOrder } from '@/api/order'
 export default {
   name: 'PayIndex',
   data () {
     return {
-      addressList: []
+      addressList: [],
+      order: {},
+      personal: {}
     }
   },
   computed: {
@@ -97,16 +104,52 @@ export default {
     longAddressList () {
       const region = this.selectedAddress.region
       return region.province + region.city + region.region + this.selectedAddress.detail
+    },
+    mode () {
+      return this.$route.query.mode
+    },
+    cartIds () {
+      return this.$route.query.cartIds
+    },
+    goodsSkuId () {
+      return this.$route.query.goodsSkuId
+    },
+    goodsId () {
+      return this.$route.query.goodsId
+    },
+    goodsNum () {
+      return this.$route.query.goodsNum
     }
   },
   created () {
     this.getAddressList()
+    this.getOrderList()
   },
   methods: {
     async getAddressList () {
       const { data: { list } } = await getAddressList()
       this.addressList = list
       console.log(list)
+    },
+    async getOrderList () {
+      // 购物车结算
+      if (this.mode === 'cart') {
+        const { data: { order, personal } } = await checkOrder(this.mode, {
+          cartIds: this.cartIds
+        })
+        this.order = order
+        this.personal = personal
+      }
+      // 立即购习结算
+      if (this.mode === 'buyNow') {
+        const { data: { order, personal } } = await checkOrder(this.mode, {
+          goodsId: this.goodsId,
+          goodsSkuId: this.goodsSkuId,
+          goodsNum: this.goodsNum
+        })
+        this.order = order
+        this.personal = personal
+      }
     }
   }
 }

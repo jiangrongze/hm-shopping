@@ -94,17 +94,36 @@ const routes = [
 const router = new VueRouter({
   routes
 })
-const authUrls = ['/pay', '/myorder']
+// const authUrls = ['/pay', '/myorder']
+const authUrls = []
 
 router.beforeEach((to, from, next) => {
-  console.log(to, from, next)
+// console.log(to, from, next)
+// 如果访问/pay且未登录，则重定向到/login
+
+  // if (authUrls.includes(to.path) && store.getters.token) {
+  // 只有当来源路由不是/login时才重定向（避免循环重定向）
+  // if (from.path !== '/login') {
+  // 用return避免重复调用next()
+  // return next('/login')
+  //   }
+  // }
+  // next() // 正常放行
+
+  // if (to.path === '/pay' && !store.getters.token) {
+  // next('/login') // 这里会导致从/cart→/pay时触发重定向，引发错误
+  // } else {
+  //   next()
+  // }
+
   if (!authUrls.includes(to.path)) {
     next()
     return
   }
   // const token = store.state.user.userInfo.token
+
+  // console.log(token)
   const token = store.getters.token
-  console.log(token)
   if (token) {
     next()
   } else {
