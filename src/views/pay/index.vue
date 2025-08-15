@@ -73,13 +73,13 @@
       </div>
 
       <div class="buytips">
-        <textarea placeholder="选填：买家留言（50字内）" name="" id="" cols="30" rows="10"></textarea>
+        <textarea v-model="remark" placeholder="选填：买家留言（50字内）" name="" id="" cols="30" rows="10"></textarea>
       </div>
     </div>
 
     <div class="footer-fixed">
       <div class="left">支付款：<span>$ {{ order.orderTotalPrice }}</span></div>
-      <div class="tipsbtn">提交订单</div>
+      <div class="tipsbtn" @click="submitOrder">提交订单</div>
     </div>
 
   </div>
@@ -87,14 +87,17 @@
 
 <script>
 import { getAddressList } from '@/api/address'
-import { checkOrder } from '@/api/order'
+import { checkOrder, submitOrder } from '@/api/order'
+import loginConfirm from '@/mixins/loginConfirm'
 export default {
   name: 'PayIndex',
+  mixins: [loginConfirm], // 混入
   data () {
     return {
       addressList: [],
       order: {},
-      personal: {}
+      personal: {},
+      remark: ''
     }
   },
   computed: {
@@ -126,6 +129,24 @@ export default {
     this.getOrderList()
   },
   methods: {
+    async submitOrder () {
+      if (this.mode === 'cart') {
+        await submitOrder(this.mode, {
+          cartIds: this.cartIds,
+          remark: this.remark
+        })
+      }
+      if (this.mode === 'buyNow') {
+        await submitOrder(this.mode, {
+          goodsId: this.goodsId,
+          goodsSkuId: this.goodsSkuId,
+          goodsNum: this.goodsNum,
+          remark: this.remark
+        })
+      }
+      this.$toast.success('支付成功')
+      this.$router.replace('/myorder')
+    },
     async getAddressList () {
       const { data: { list } } = await getAddressList()
       this.addressList = list

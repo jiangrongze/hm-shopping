@@ -110,9 +110,10 @@ import { getProComments, getProDetail } from '@/api/product'
 import defaultImg from '@/assets/default-avatar.png'
 import CountBox from '@/components/CountBox.vue'
 import { addCart } from '@/api/cart'
-// import { Dialog } from 'vant'
+import loginConfirm from '@/mixins/loginConfirm'
 export default {
   name: 'ProdetailIndex',
+  mixins: [loginConfirm],
   components: {
     CountBox
   },
@@ -178,32 +179,8 @@ export default {
       // })
     },
     async addCart () {
-      console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++')
-      console.log(this.$store.getters.token)
-      // this.$router.push('/login')
-      if (!this.$store.getters.token) {
-        // console.log('==============================+')
-        // Dialog.alert('123454')
-        this.$dialog.confirm({
-          title: '温馨提示',
-          message: '此时需要先登录才能操作',
-          confirmButtonText: '去登录',
-          cancelButtonText: '再逛逛'
-        })
-          .then(() => {
-            // this.$router.push('/login')
-            // 如果希望，跳转到登录=>登录后能回跳回来，需要在跳转去携带参数（当前的路径
-            // this.$route.fullpath (会包含查询参数)
-            // this.$router.push({
-            this.$router.replace({
-              path: '/login',
-              query: {
-                backUrl: this.$route.fullPath
-              }
-            })
-          })
-          .catch(() => {
-          })
+      if (this.loginConfirm()) {
+        return
       }
       const { data } = await addCart(this.goodsId, this.addCount, this.detail.skuList[0].goods_sku_id)
       this.cartTotal = data.cartTotal
@@ -211,9 +188,11 @@ export default {
       this.showPannel = false
       console.log(this.cartTotal)
     },
-    async goBuyNow () {
-      console.log('00000000----------------')
-      await this.$router.push({
+    goBuyNow () {
+      if (this.loginConfirm()) {
+        return
+      }
+      this.$router.push({
         path: '/pay',
         query: {
           mode: 'buyNow',
