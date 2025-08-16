@@ -1,19 +1,30 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import Login from '@/views/login'
-import Layout from '@/views/layout'
-import Search from '@/views/search'
-import SearchList from '@/views/search/list.vue'
-import ProDetail from '@/views/prodetail'
-import Pay from '@/views/pay'
-import MyOrder from '@/views/myorder'
-// import { component } from 'vue/types/umd'
+
 import Home from '@/views/layout/home'
 import Category from '@/views/layout/category'
 import Cart from '@/views/layout/cart'
 import User from '@/views/layout/user'
 import store from '@/store/modules/user'
+
+const Login = () => import('@/views/login')
+const Layout = () => import('@/views/layout')
+const Search = () => import('@/views/search')
+const SearchList = () => import('@/views/search/list.vue')
+const ProDetail = () => import('@/views/prodetail')
+const Pay = () => import('@/views/pay')
+const MyOrder = () => import('@/views/myorder')
+
+// import Login from '@/views/login'
+// import Layout from '@/views/layout'
+// import Search from '@/views/search'
+// import SearchList from '@/views/search/list.vue'
+// import ProDetail from '@/views/prodetail'
+// import Pay from '@/views/pay'
+// import MyOrder from '@/views/myorder'
+
+// import { component } from 'vue/types/umd'
 
 Vue.use(VueRouter)
 

@@ -1,8 +1,10 @@
 import Vue from 'vue'
 // import Vant from 'vant'
 // import 'vant/lib/index.css'
-import { Checkbox, dialog, ActionSheet, Rate, Icon, Search, Swipe, SwipeItem, Grid, GridItem, Button, Switch, Tabbar, TabbarItem, NavBar } from 'vant'
+import { Tab, Tabs, Checkbox, dialog, ActionSheet, Rate, Icon, Search, Swipe, SwipeItem, Grid, GridItem, Button, Switch, Tabbar, TabbarItem, NavBar } from 'vant'
 
+Vue.use(Tab)
+Vue.use(Tabs)
 Vue.use(Checkbox)
 Vue.use(dialog)
 Vue.use(ActionSheet)
